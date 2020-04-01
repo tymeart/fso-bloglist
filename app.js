@@ -13,10 +13,9 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get('/api/blogs', (req, res) => {
-  Blog
-    .find({})
-    .then(blogs => res.json(blogs));
+app.get('/api/blogs', async (req, res) => {
+  const blogs = await Blog.find({});
+  res.json(blogs.map(blog => blog.toJSON()));
 });
 
 app.post('/api/blogs', (req, res) => {
