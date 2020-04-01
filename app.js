@@ -19,12 +19,14 @@ app.get('/api/blogs', async (req, res) => {
 });
 
 app.post('/api/blogs', (req, res) => {
-  if (req.body.content === undefined) {
-    return response.status(400).json({ error: 'Content Missing' });
+  if (req.body.url === undefined) {
+    return res.status(400).json({ error: 'Url Missing' });
   }
 
   const blog = new Blog(req.body);
   blog
     .save()
-    .then(result => res.status(201).json(result));
+    .then(result => res.status(200).json(result));
 });
+
+module.exports = app;
