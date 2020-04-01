@@ -48,4 +48,24 @@ test('a specific blog is within the returned blogs', async () => {
   expect(blogTitles).toContain('Relearning math');
 });
 
+test('a valid blog can be added', async () => {
+  const newBlog = {
+    title: 'Rise of reusables',
+    author: 'Nat',
+    url: 'http://natsblog.com',
+    likes: 2
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/);
+
+  const response = await api.get('/api/blogs');
+  const contents = response.body.map(blog => blog.title);
+
+  expect(response.body).toHaveLength(initialBlogs.length + 1);
+  expect(contents).toContain('Rise of reusables');
+});
 afterAll(() => mongoose.connection.close());

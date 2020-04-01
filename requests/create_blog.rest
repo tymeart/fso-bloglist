@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "Sally's Life",
-  "author": "Sally Silly",
-  "url": "https://sallyslife.com",
+  "title": "Fish",
+  "author": "Shark",
+  "url": "https://sharks.com",
   "likes": 0
 }
