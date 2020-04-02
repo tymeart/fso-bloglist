@@ -18,15 +18,24 @@ app.get('/api/blogs', async (req, res) => {
   res.json(blogs.map(blog => blog.toJSON()));
 });
 
-app.post('/api/blogs', (req, res) => {
+app.post('/api/blogs', async (req, res, next) => {
   if (req.body.url === undefined) {
     return res.status(400).json({ error: 'Url Missing' });
   }
 
-  const blog = new Blog(req.body);
-  blog
-    .save()
-    .then(result => res.status(200).json(result));
+  const blog = new Blog({
+    title: req.body.title,
+    author: req.body.author,
+    url: req.body.url,
+    likes: 0
+  });
+  
+  try {
+    const savedBlog = await blog.save();
+    res.json(savedBlog.toJSON());
+  } catch (exception) {
+    next(exception);
+  }
 });
 
 module.exports = app;
