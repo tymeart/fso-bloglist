@@ -8,12 +8,10 @@ const api = supertest(app);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-
-  let blogObject = new Blog(helper.initialBlogs[0]);
-  await blogObject.save();
-
-  blogObject = new Blog(helper.initialBlogs[1]);
-  await blogObject.save();
+  
+  const blogObjects = helper.initialBlogs.map(blog => new Blog(blog));
+  const promiseArray = blogObjects.map(blog => blog.save());
+  await Promise.all(promiseArray);
 });
 
 test('blogs are returned as json', async () => {
@@ -26,6 +24,12 @@ test('blogs are returned as json', async () => {
 test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs');
   expect(response.body).toHaveLength(helper.initialBlogs.length);
+});
+
+test.only('the unique identifier of a blog is named id', async () => {
+  const blogs = await helper.blogsInDb();
+  const oneBlog = blogs[0];
+  expect(oneBlog.id).toBeDefined();
 });
 
 test('a specific blog is within the returned blogs', async () => {
@@ -67,7 +71,7 @@ test('blog without content is not added', async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
 });
 
-test.only('a specific blog can be viewed', async () => {
+test('a specific blog can be viewed', async () => {
   const blogsAtStart = await helper.blogsInDb();
   const blogToView = blogsAtStart[0];
 
@@ -79,7 +83,7 @@ test.only('a specific blog can be viewed', async () => {
   expect(resultBlog.body).toEqual(blogToView);
 });
 
-test.only('a blog can be deleted', async () => {
+test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDb();
   const blogToDelete = blogsAtStart[0];
 
