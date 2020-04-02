@@ -18,6 +18,19 @@ app.get('/api/blogs', async (req, res) => {
   res.json(blogs.map(blog => blog.toJSON()));
 });
 
+app.get('/api/blogs/:id', async (req, res, next) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (blog) {
+      res.json(blog.toJSON());
+    } else {
+      res.status(404).end();
+    }
+  } catch (exception) {
+    next(exception);
+  }
+});
+
 app.post('/api/blogs', async (req, res, next) => {
   if (req.body.url === undefined) {
     return res.status(400).json({ error: 'Url Missing' });
@@ -33,6 +46,15 @@ app.post('/api/blogs', async (req, res, next) => {
   try {
     const savedBlog = await blog.save();
     res.json(savedBlog.toJSON());
+  } catch (exception) {
+    next(exception);
+  }
+});
+
+app.delete('/api/blogs/:id', async (req, res, next) => {
+  try {
+    await Blog.findByIdAndRemove(req.params.id);
+    res.status(204).end();
   } catch (exception) {
     next(exception);
   }
