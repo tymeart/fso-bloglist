@@ -22,19 +22,19 @@ test('blogs are returned as json', async () => {
 });
 
 test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs');
-  expect(response.body).toHaveLength(helper.initialBlogs.length);
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
 });
 
-test.only('the unique identifier of a blog is named id', async () => {
+test('the unique identifier of a blog is named id', async () => {
   const blogs = await helper.blogsInDb();
   const oneBlog = blogs[0];
   expect(oneBlog.id).toBeDefined();
 });
 
 test('a specific blog is within the returned blogs', async () => {
-  const response = await api.get('/api/blogs');
-  const blogTitles = response.body.map(blog => blog.title);
+  const blogsAtEnd = await helper.blogsInDb();
+  const blogTitles = blogsAtEnd.map(blog => blog.title);
   expect(blogTitles).toContain('Relearning math');
 });
 
