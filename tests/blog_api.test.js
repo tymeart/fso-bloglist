@@ -55,7 +55,7 @@ describe('viewing a specific blog', () => {
       .expect(404);
   });
 
-  test.only('fails with statuscode 400 if id is not valid', async () => {
+  test('fails with statuscode 400 if id is not valid', async () => {
     const invalidId = '5a3d5da59070081a82a3445';
 
     await api
@@ -99,11 +99,34 @@ describe('addition of a new blog', () => {
   });
 });
 
+describe('updating a blog', () => {
+  test('succeeds with statuscode 200 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const newBlogInfo = {
+      title: 'HTML is NOT so easy',
+      author: 'Ted Blue',
+      url: 'http://tedblue.com',
+      likes: 3
+    };
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(newBlogInfo)
+      .expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd[0].title).toBe(newBlogInfo.title);
+    expect(blogsAtEnd[0].likes).toBe(newBlogInfo.likes);
+  });
+});
+
 describe('deletion of a blog', () => {
   test('succeeds with a statuscode of 204 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
-  
+
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
       .expect(204);
