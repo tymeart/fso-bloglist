@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 blogsRouter.get('/', async (req, res) => {
   const blogs = await Blog.find({});
@@ -25,15 +26,20 @@ blogsRouter.post('/', async (req, res, next) => {
     return res.status(400).json({ error: 'Url Missing' });
   }
 
+  const user = await User.findById(req.body.user);
+
   const blog = new Blog({
     title: req.body.title,
     author: req.body.author,
     url: req.body.url,
-    likes: 0
+    likes: 0,
+    user: user._id
   });
 
   try {
     const savedBlog = await blog.save();
+    user.blogs = user.blogs.concat(savedBlog._id);
+    await user.save();
     res.json(savedBlog.toJSON());
   } catch (exception) {
     next(exception);
