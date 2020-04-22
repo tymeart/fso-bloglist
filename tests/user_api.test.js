@@ -1,16 +1,22 @@
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const supertest = require('supertest');
+const app = require('../app');
 const User = require('../models/user');
+const helper = require('./test_helper');
+
+const api = supertest(app);
+
+beforeEach(async () => {
+  await User.deleteMany({});
+
+  const passwordHash = await bcrypt.hash('secret', 10);
+  const user = new User({ username: 'root', passwordHash });
+
+  await user.save();
+});
 
 describe('when there is initially one user in db', () => {
-  beforeEach(async () => {
-    await User.deleteMany({});
-
-    const passwordHash = await bcrypt.hash('secret', 10);
-    const user = new User({ username: 'root', passwordHash });
-
-    await user.save();
-  });
-
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await helper.usersInDb();
 
@@ -33,23 +39,31 @@ describe('when there is initially one user in db', () => {
     expect(usernames).toContain(newUser.username);
   });
 
-  test('creation fails with proper statuscode and message if username is already taken', async () => {
+  test.only('creation fails with proper statuscode and message if username is already taken', async () => {
     const usersAtStart = await helper.usersInDb();
 
     const newUser = {
-      username: 'treeplanter',
-      name: 'Ty',
+      username: 'root',
+      name: 'Superuser',
       password: 'planting'
     };
 
-    const result = await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(400)
-      .expect('Content-Type', /application\/json/);
-    expect(result.body.error).toContain('Username must be unique');
+    try {
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/);
+      expect(result.body.error).toContain('`username` to be unique');
+    } catch (err) {
+      next(err)
+    }
 
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
+});
+
+afterAll(async () => {
+  await mongoose.connection.close()
 });
