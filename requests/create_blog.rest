@@ -1,10 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBsZW50dHkiLCJpZCI6IjVlOThjYTYyY2I1YWU3MDlmMjJlNzg2MiIsImlhdCI6MTU4NzY4ODc0MH0.Fu1Qzb1xUXXLWXx-HKylObk8joq2DivqkfcTH7YXo3s
 
 {
-  "title": "Allergenic Trees",
-  "author": "Carmen",
-  "url": "https://carmensgardening.com",
+  "title": "Tiredness",
+  "author": "Billy Sloth",
+  "url": "https://slothblog.com",
   "likes": 0,
   "user": "5e98ca62cb5ae709f22e7862"
 }
