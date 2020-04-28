@@ -18,16 +18,12 @@ blogsRouter.get('/', async (req, res) => {
 });
 
 blogsRouter.get('/:id', async (req, res, next) => {
-  try {
-    const blog = await Blog.findById(req.params.id);
-    console.log(blog)
-    if (blog) {
-      res.json(blog.toJSON());
-    } else {
-      res.status(404).end();
-    }
-  } catch (exception) {
-    next(exception);
+  const blog = await Blog.findById(req.params.id);
+  console.log(blog)
+  if (blog) {
+    res.json(blog.toJSON());
+  } else {
+    res.status(404).end();
   }
 });
 
@@ -52,14 +48,10 @@ blogsRouter.post('/', async (req, res, next) => {
     user: user._id
   });
 
-  try {
-    const savedBlog = await blog.save();
-    user.blogs = user.blogs.concat(savedBlog._id);
-    await user.save();
-    res.json(savedBlog.toJSON());
-  } catch (exception) {
-    next(exception);
-  }
+  const savedBlog = await blog.save();
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+  res.json(savedBlog.toJSON());
 });
 
 blogsRouter.put('/:id', async (req, res, next) => {
@@ -70,22 +62,14 @@ blogsRouter.put('/:id', async (req, res, next) => {
     likes: req.body.likes
   };
 
-  try {
-    const blog = await Blog.findByIdAndUpdate(req.params.id, updatedBlog, { new: true });
-    await blog.save();
-    res.json(blog.toJSON());
-  } catch (exception) {
-    next(exception);
-  }
+  const blog = await Blog.findByIdAndUpdate(req.params.id, updatedBlog, { new: true });
+  await blog.save();
+  res.json(blog.toJSON());
 });
 
 blogsRouter.delete('/:id', async (req, res, next) => {
-  try {
-    await Blog.findByIdAndRemove(req.params.id);
-    res.status(204).end();
-  } catch (exception) {
-    next(exception);
-  }
+  await Blog.findByIdAndRemove(req.params.id);
+  res.status(204).end();
 });
 
 module.exports = blogsRouter;

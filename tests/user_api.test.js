@@ -47,17 +47,12 @@ describe('when there is initially one user in db', () => {
       name: 'Superuser',
       password: 'planting'
     };
-
-    try {
-      const result = await api
-        .post('/api/users')
-        .send(newUser)
-        .expect(400)
-        .expect('Content-Type', /application\/json/);
-      expect(result.body.error).toContain('`username` to be unique');
-    } catch (err) {
-      next(err)
-    }
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+    expect(result.body.error).toContain('`username` to be unique');
 
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
